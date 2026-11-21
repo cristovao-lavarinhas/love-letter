@@ -74,7 +74,6 @@
   .num.tick span { animation: drop .45s cubic-bezier(.2,.8,.2,1); }
   @keyframes drop { from { transform: translateY(-60%); opacity: 0; } to { transform: none; opacity: 1; } }
   .lbl { display: block; margin-top: 2px; font-size: 13px; color: var(--blush); opacity: .8; }
-  .count .when { margin: 12px 0 0; font-size: 15px; color: var(--blush); opacity: .75; }
 
   /* ---------- Envelope ---------- */
   .stage { display: grid; place-items: center; width: 100%; padding: 24px 0; }
@@ -167,6 +166,7 @@
   .paper .details li { display: grid; grid-template-columns: 7.2em 1fr; gap: 10px; padding: 6px 0; font-size: clamp(18px, 2.5vw, 20px); line-height: 1.4; }
   .paper .details span { font-style: italic; color: #9e1838; }
   .paper .ask { font: 600 clamp(30px, 6vw, 38px)/1.2 var(--script); color: #9e1838; text-align: center; margin: 26px 0 4px; }
+  .paper .dc { font-style: italic; color: #9e1838; }
   .paper .sign { text-align: right; margin: 22px 0 0; font-style: italic; }
   .paper .sign em { display: block; font: 600 30px/1.2 var(--script); color: #9e1838; font-style: normal; }
   .rv { opacity: 0; filter: blur(6px); transform: translateY(8px); transition: opacity .9s, filter .9s, transform .9s; }
@@ -226,7 +226,6 @@
       <div class="unit"><span class="num" id="m"><span>--</span></span><span class="lbl">minutos</span></div>
       <div class="unit"><span class="num" id="s"><span>--</span></span><span class="lbl">segundos</span></div>
     </div>
-    <p class="when" id="countWhen">11 de dezembro de 2026 · 10h00</p>
   </section>
 
   <section class="stage">
@@ -267,8 +266,8 @@
   const DINNER_AT = Date.UTC(2026, 11, 11, 20, 0, 0);   // jantar
   const DINNER_END = Date.UTC(2026, 11, 11, 23, 30, 0);
   const PREVIEW_HASH = "466e9d7f563280b12bcc1b4ed443ad0cbeef01441e478dfcb58fc3381b53ebf8";                      // sha-256 do código de pré-visualização
-  const KEY = "af3c2e98893ba5a80b04514d";
-  const LETTER = "XRYTAF4ESksFG1cDFVBBSkZADgUEEVABQQJWGVcIW0pXGVcHQQdRCgZeH0QLOwgUQQVfAkEWBBpQXF8ODhUTThJcc1VHXlgNDwcfXx0VBzIESRMBDVQSSw1AQkIXD3EXEQNBAkERXBhIVkFCBEYVXRAGWVUZEVFEBBMTF1MIW/uRVB1eTkVfMgwSEFdZUEcXXERBFRBbaE1dS1xCAloPTlkGUUYYRVFEEQdBAhIQVBhSWF0WAEdPGGOhgxRb8ocXQQlAQ1YKUEsUGV0XDBUS+50WWVsVVEcUBAVaAl5LM3dWXVZdQXwSS19CVl1WUBQBDEZABlUXXFxXAxOhyBUUVRBeWQpHVEcQABNBAlwRXBhVUEAWBEcIV0MNDBtcDxhEBEZAoIFFT1lRShMGBEYCV1IQWUYVQEEFDUZCFlMLXVcYVfDDQVYJXVcDQllaQhpYThYNaQ4VGVtUWEARXBcTThJcfxRERFFEEQlXBkFFSllaXEFYXRoRBjpeRVgVUlgFEhUOQVYATVlRVUBCE0NDBjpCEAhZWApYEhZSDQw0TFlWXVxeTkYRWV5cDFYLWVsOBEoTUgNFXV0YXVYYBFgDSl9OEPeVQhRWUQ4DUw5KWwYEFl8LXz9BGAwOWQoJQkQFD1h8DVYABRdLSVIMX0AMGEIHQ0BUREYFDxJWQ18MSkxdS1oNElpByK/GmwgaXV1aa0YTX14MBwRLSVIMX3ETXUMREFdaVVFYThVDAlxbW11VGUUHEkEIXFFOEFdaXBQFEBNaD11FSE1dGUcHQVMIQlUQEEdQX0ANE0ZeBl4NVkoWGX2hwlpBUPPDEEZQVkYFEkoTEPHWGUxNFw9NDVxfMgxNRVgLOwgUQQVfAkEWBBpKTxFcMUcOVVUWXxRXXlVEAgleClYEFRhaVlJCAloMSFEMWF1UEVFIQRZWD11FVF1WVkBOQVgAUUNCRVlUEUcRExZBBkEEFwQXSQ1oXUVBW1wDQ0cIE1UXCkZBFRBbfFZM+pANg7XHGFEBVV1BUEdbXUlDXThZXVFOGVAOAEYSBRIBWFtcUlEXQRRFQQxvGRgEW0YWFVoPGFMOUUdGDBYGFQgTGlcWGxhRXQ5AGFASGg4xWVkJHlYRFRJcDQxvGRgEW0YWFVoPGFMOUUdGDBYGFQgTDV1HGVFcBBEMDhdfdvPBXwgaU0EQFQldXThZFlxRTw1oXUVBW1wDQ0cIE0cNBggTEURHB3tXVBMDDFoTFAwHXQp2Q10XFaWAFfHGVgQXXF5cXRoRBg==";                          // texto da carta, codificado
+  const KEY = "4e64931836fa01fa7ddb51ee";
+  const LETTER = "CBUWV1VSQksOFAIARFRGE0FGWlMEEQEAFAFTTlxeU0pcFgIEEANWUwFYSxILO1kVFAZaVUpADBpbUwoNXxEUFxVaJwNHXgkMWgQaCBZDDzIPRkYCXFAVEgpGFhQXDy8EWhFXRkNaX1BcFgIEEH8HFVYISkJm8tZFWqaFRxlcQhhXWQ8SHBEIFFpEF6GYRQwKFABFRFxQWFlfGGwuXlUDXhctFxFaEQMMVwQWUVQTQl1URAMFXwtGop5EEQ8VDQxbRgBFQFhGQ1ldQgNBXVgVFVIWDQ1GXllKXVsaFFwTQvuAFhAAWUJGBVIXBw1XQwwXFBRDVVUTQE1SWAIOEF2lwBcHDAdSUBcIWxYYCBZDDzIPRkYCXFAVEgpGFhQXD1kWRARYFFpfUEtAC0QFUxNYJUUBFxEVUgoBUV8KG0pDUFYNFgUOXREHEEINCA0VQBAAFBFTFF9aS11BFhUEXkUPExcJAQ5dXhdLFCv1l1YTWfuSFhQEV0MHEhtEF6GGEREQGlkZRAc5DUgTVQoAQ0JbQ1YXD0JHR0dbcQtC95pc07iVFgcCVVgSAERbWE1FD29ZUAxAFFpfUEtAC0QCWF4PAlIXRBBDE1tvFEUKVkxHRVddFgUNUUIVXBUGEAwVSAAWFkVfUAQRSF1AFFgyWVxaTlUREBZaX1tvFEUKVkxHRVddFgUNUUIVXBUGEAwVXwpHFAxSCRtdXhoNeKXCXw1JA0IQEA1bD29ZGwFfQgc5DUgTVQoAQ0JbQ0QNAwwVQxNHCiZZWRlSXFdBGloEXQ8lE14XEKGGR6bGW1kZUVQNDRdDCA==";                          // texto da carta, codificado
   const WA_TEXT = "Sim! Aceito o convite 💌 Até logo às 20h ✨";
   // ========================================================
 
@@ -363,13 +362,12 @@
   }
   function renderCount() {
     const t = now();
-    let target, title, when;
-    if (!isOpen())            { target = OPEN_AT;   title = "A tua carta abre daqui a";  when = "11 de dezembro de 2026 · 10h00"; }
-    else if (t < DINNER_AT)   { target = DINNER_AT; title = "O nosso jantar é daqui a";  when = "hoje · 20h00 · dress code: bem vestida"; }
-    else if (t < DINNER_END)  { target = null;      title = "É agora ✨";               when = "Até já 💫"; }
-    else                      { target = null;      title = "11 · 12 · 2026";            when = "uma noite para lembrar"; }
+    let target, title;
+    if (!isOpen())            { target = OPEN_AT;   title = "A tua carta abre daqui a"; }
+    else if (t < DINNER_AT)   { target = DINNER_AT; title = "O nosso jantar é daqui a"; }
+    else if (t < DINNER_END)  { target = null;      title = "É agora ✨"; }
+    else                      { target = null;      title = "11 · 12 · 2026"; }
     $("countTitle").textContent = title;
-    $("countWhen").textContent = when;
     const diff = Math.max(0, (target ?? t) - t);
     const s = Math.floor(diff / 1000);
     setNum("d", Math.floor(s / 86400)); setNum("h", Math.floor(s / 3600) % 24);
@@ -499,7 +497,7 @@
       "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//carta//PT", "BEGIN:VEVENT",
       "UID:jantar-misterioso-20261211@carta", "DTSTAMP:20261201T000000Z",
       "DTSTART:20261211T200000Z", "DTEND:20261211T233000Z",
-      "SUMMARY:Jantar misterioso ✨", "DESCRIPTION:Dress code: bem vestida — como te sentires melhor.",
+      "SUMMARY:Jantar misterioso ✨", "DESCRIPTION:Dress code: com aquilo que te fizer sentir melhor.",
       "LOCATION:Segredo 🤫", "BEGIN:VALARM", "TRIGGER:-PT2H", "ACTION:DISPLAY", "DESCRIPTION:Jantar misterioso daqui a 2 horas", "END:VALARM",
       "END:VEVENT", "END:VCALENDAR",
     ].join("\r\n");
@@ -508,7 +506,7 @@
   const gcal = "https://calendar.google.com/calendar/render?action=TEMPLATE"
     + "&text=" + encodeURIComponent("Jantar misterioso ✨")
     + "&dates=20261211T200000Z/20261211T233000Z"
-    + "&details=" + encodeURIComponent("Dress code: bem vestida — como te sentires melhor.")
+    + "&details=" + encodeURIComponent("Dress code: com aquilo que te fizer sentir melhor.")
     + "&location=" + encodeURIComponent("Segredo 🤫");
 
   function sayYes() {
@@ -518,7 +516,7 @@
     box.outerHTML = `
       <div class="yay rv in">
         <h2>Sabia! 💖</h2>
-        <p>Então está combinado: <b>hoje às 20h00</b>. Vai bem vestida, como te sentires melhor. O resto é surpresa.</p>
+        <p>Então está combinado: <b>hoje às 20h00</b>. Vai com aquilo que te fizer sentir melhor. O resto é surpresa.</p>
         <div class="actions">
           <a class="main" href="https://wa.me/?text=${encodeURIComponent(WA_TEXT)}" target="_blank" rel="noopener">Diz-me que sim no WhatsApp</a>
           <a href="${gcal}" target="_blank" rel="noopener">Guardar no Google Calendar</a>
