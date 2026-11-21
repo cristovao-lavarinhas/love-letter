@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Abre-me</title>
+<meta name="theme-color" content="#14050d">
+<meta name="robots" content="noindex">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💌</text></svg>">
+<link rel="preload" href="fonts/cormorant-500.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/dancing-600.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+  /*
+    VOICE: íntimo, elegante, um pouco brincalhão no fim.
+    IDEA: uma carta selada com lacre, guardada até ao dia certo.
+    PICTURE: envelope com selo de lacre a flutuar sob um céu de pétalas.
+    COLOUR and TYPE: vinho profundo + dourado + rosa; Cormorant Garamond + Dancing Script.
+    LAYOUT: contagem em cima, envelope ao centro, carta em papel por cima de tudo.
+  */
+  /* Fontes: SIL Open Font License 1.1 (Cormorant Project Authors; Dancing Script Project Authors) */
+  @font-face { font-family: "Cormorant"; src: url("fonts/cormorant-500.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+  @font-face { font-family: "Cormorant"; src: url("fonts/cormorant-500i.woff2") format("woff2"); font-weight: 500; font-style: italic; font-display: swap; }
+  @font-face { font-family: "Cormorant"; src: url("fonts/cormorant-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+  @font-face { font-family: "Dancing"; src: url("fonts/dancing-600.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+
+  :root {
+    --wine: #14050d; --wine-2: #2b0a1a; --wine-3: #4a1029;
+    --gold: #e8c27a; --gold-2: #b8893f;
+    --rose: #ff5c8a; --blush: #ffc8d6;
+    --paper: #fbf3e8; --ink: #3a1420;
+    --serif: "Cormorant", "Cormorant Garamond", Georgia, "Times New Roman", serif;
+    --script: "Dancing", "Dancing Script", "Brush Script MT", cursive;
+  }
+  * { box-sizing: border-box; min-width: 0; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background:
+      radial-gradient(70% 50% at 50% 55%, rgba(255, 92, 138, .14), transparent 70%),
+      radial-gradient(120% 90% at 50% 40%, var(--wine-3) 0%, var(--wine-2) 45%, var(--wine) 100%);
+    background-attachment: fixed;
+    color: var(--blush); font-family: var(--serif); overflow-x: hidden;
+    font-variant-numeric: lining-nums;
+    -webkit-tap-highlight-color: transparent;
+  }
+  #sky { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+
+  main {
+    position: relative; z-index: 1; min-height: 100vh; min-height: 100dvh;
+    display: grid; grid-template-rows: auto 1fr auto; justify-items: center;
+    padding: max(18px, env(safe-area-inset-top)) 16px max(18px, env(safe-area-inset-bottom));
+  }
+
+  /* ---------- Contagem ---------- */
+  .count { text-align: center; margin-top: 8px; }
+  .count h1 {
+    margin: 0 0 12px; font-weight: 500; font-style: italic; font-size: clamp(17px, 2.4vw, 21px);
+    color: var(--gold); letter-spacing: .02em;
+  }
+  .units { display: flex; gap: clamp(8px, 2vw, 16px); justify-content: center; }
+  .unit {
+    width: clamp(64px, 17vw, 92px); padding: 10px 0 8px; border-radius: 14px;
+    background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02));
+    border: 1px solid rgba(232, 194, 122, .28);
+    box-shadow: 0 10px 30px rgba(0,0,0,.35), inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  }
+  .num {
+    display: block; height: 1.1em; overflow: hidden; position: relative;
+    font: 600 clamp(32px, 8vw, 48px)/1.1 var(--serif); color: #fff3e0;
+    font-variant-numeric: lining-nums tabular-nums;
+    text-shadow: 0 0 18px rgba(255, 92, 138, .45);
+  }
+  .num span { display: block; }
+  .num.tick span { animation: drop .45s cubic-bezier(.2,.8,.2,1); }
+  @keyframes drop { from { transform: translateY(-60%); opacity: 0; } to { transform: none; opacity: 1; } }
+  .lbl { display: block; margin-top: 2px; font-size: 13px; color: var(--blush); opacity: .8; }
+  .count .when { margin: 12px 0 0; font-size: 15px; color: var(--blush); opacity: .75; }
+
+  /* ---------- Envelope ---------- */
+  .stage { display: grid; place-items: center; width: 100%; padding: 24px 0; }
+  .env-wrap { text-align: center; }
+  .envelope {
+    --w: min(78vw, 360px); --h: calc(var(--w) * .64);
+    position: relative; width: var(--w); height: var(--h); margin: 0 auto;
+    cursor: pointer; border: 0; padding: 0; background: none; perspective: 900px;
+    animation: float 5s ease-in-out infinite; filter: drop-shadow(0 24px 40px rgba(0,0,0,.5));
+  }
+  .envelope:focus-visible { outline: 2px solid var(--gold); outline-offset: 10px; border-radius: 12px; }
+  @keyframes float { 0%,100% { transform: translateY(0) rotate(-1deg); } 50% { transform: translateY(-10px) rotate(1deg); } }
+  .envelope.shake { animation: shake .5s; }
+  @keyframes shake { 0%,100% { transform: none; } 20% { transform: rotate(-4deg); } 40% { transform: rotate(4deg); } 60% { transform: rotate(-3deg); } 80% { transform: rotate(2deg); } }
+
+  .env-back, .env-front, .env-flap, .env-paper { position: absolute; left: 0; width: 100%; }
+  .env-back { inset: 0; height: 100%; border-radius: 10px; background: linear-gradient(160deg, #f6e4d2, #e9cdb5); }
+  .env-paper {
+    left: 7%; width: 86%; height: 88%; top: 6%; border-radius: 6px; background: var(--paper);
+    box-shadow: 0 2px 8px rgba(0,0,0,.15); transition: transform 1.1s cubic-bezier(.3,.7,.2,1) .55s;
+    display: grid; place-items: center; z-index: 1;
+  }
+  .env-paper i { font: 600 clamp(20px, 5vw, 26px) var(--script); color: var(--ink); opacity: .75; font-style: normal; }
+  .env-front {
+    inset: 0; height: 100%; z-index: 2; border-radius: 10px;
+    background:
+      linear-gradient(to top right, #f3dcc6 49.6%, transparent 50%) left / 50.5% 100% no-repeat,
+      linear-gradient(to top left, #f3dcc6 49.6%, transparent 50%) right / 50.5% 100% no-repeat,
+      linear-gradient(to top, #efd5bd 0 52%, transparent 52%);
+    clip-path: inset(0 round 10px);
+  }
+  .env-flap {
+    top: 0; height: 62%; z-index: 3; transform-origin: top center;
+    background: linear-gradient(180deg, #f8e7d6, #ecd1ba);
+    clip-path: polygon(0 0, 100% 0, 50% 100%);
+    transition: transform .8s cubic-bezier(.5,0,.3,1), z-index 0s .4s;
+  }
+  .seal {
+    position: absolute; left: 50%; top: 62%; z-index: 4; width: 25%; aspect-ratio: 1;
+    transform: translate(-50%, -50%); border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, #e2475f 0%, #b01836 45%, #7a0d22 100%);
+    box-shadow: 0 4px 10px rgba(80, 0, 20, .5), inset 0 -3px 6px rgba(0,0,0,.35), inset 0 3px 6px rgba(255,255,255,.25);
+    display: grid; place-items: center; transition: transform .5s, opacity .5s;
+  }
+  .seal::before {          /* bordo irregular do lacre */
+    content: ""; position: absolute; inset: -6%; border-radius: 46% 54% 50% 50% / 52% 48% 52% 48%;
+    background: inherit; z-index: -1; filter: brightness(.85);
+  }
+  .seal svg { width: 52%; height: 52%; fill: none; stroke: rgba(255, 210, 220, .75); stroke-width: 1.6; }
+  .envelope.ready .seal { animation: pulse 1.8s ease-in-out infinite; }
+  @keyframes pulse { 0%,100% { box-shadow: 0 4px 10px rgba(80,0,20,.5), 0 0 0 0 rgba(255,92,138,.55); }
+                     50% { box-shadow: 0 4px 10px rgba(80,0,20,.5), 0 0 0 16px rgba(255,92,138,0); } }
+
+  .envelope.open { animation: none; }
+  .envelope.open .seal { transform: translate(-50%, -50%) scale(1.4) rotate(25deg); opacity: 0; }
+  .envelope.open .env-flap { transform: rotateX(180deg); z-index: 0; }
+  .envelope.open .env-paper { transform: translateY(-70%); }
+
+  .hint { margin: 26px auto 0; max-width: 32ch; font-size: 18px; font-style: italic; color: var(--blush); min-height: 2.6em; }
+  .hint b { color: var(--gold); font-weight: 600; font-style: normal; }
+  .tease { color: #fff; transition: opacity .3s; }
+
+  footer { font-size: 13px; color: var(--blush); opacity: .45; text-align: center; }
+
+  /* ---------- Carta ---------- */
+  .letter-view {
+    position: fixed; inset: 0; z-index: 5; overflow-y: auto; overscroll-behavior: contain;
+    padding: max(28px, env(safe-area-inset-top)) 14px 60px; opacity: 0; pointer-events: none;
+    transition: opacity .9s; background: rgba(20, 5, 13, .55);
+  }
+  .letter-view.show { opacity: 1; pointer-events: auto; }
+  .paper {
+    position: relative; max-width: 600px; margin: 40px auto 0; padding: clamp(28px, 6vw, 56px) clamp(22px, 6vw, 58px) clamp(30px, 6vw, 50px);
+    color: var(--ink); border-radius: 6px;
+    background:
+      radial-gradient(120% 80% at 0% 0%, rgba(232, 194, 122, .18), transparent 60%),
+      radial-gradient(120% 80% at 100% 100%, rgba(255, 92, 138, .10), transparent 60%),
+      var(--paper);
+    box-shadow: 0 30px 80px rgba(0,0,0,.55), 0 0 0 1px rgba(184, 137, 63, .25) inset;
+    transform: translateY(40px) scale(.97); transition: transform 1s cubic-bezier(.2,.8,.2,1);
+  }
+  .letter-view.show .paper { transform: none; }
+  .paper::before {   /* fita dourada fina */
+    content: ""; position: absolute; inset: 12px; border: 1px solid rgba(184, 137, 63, .35); border-radius: 3px; pointer-events: none;
+  }
+  .paper .date { text-align: right; font-style: italic; font-size: 17px; color: #8a5a3c; margin: 0 0 18px; }
+  .paper .hello { font: 600 clamp(34px, 7vw, 44px)/1.1 var(--script); color: #9e1838; margin: 0 0 14px; }
+  .paper p { font-size: clamp(19px, 2.6vw, 21px); line-height: 1.55; margin: 0 0 14px; }
+  .paper .details { list-style: none; padding: 14px 0; margin: 8px 0 18px; border-top: 1px solid rgba(184,137,63,.35); border-bottom: 1px solid rgba(184,137,63,.35); }
+  .paper .details li { display: grid; grid-template-columns: 7.2em 1fr; gap: 10px; padding: 6px 0; font-size: clamp(18px, 2.5vw, 20px); line-height: 1.4; }
+  .paper .details span { font-style: italic; color: #9e1838; }
+  .paper .ask { font: 600 clamp(30px, 6vw, 38px)/1.2 var(--script); color: #9e1838; text-align: center; margin: 26px 0 4px; }
+  .paper .sign { text-align: right; margin: 22px 0 0; font-style: italic; }
+  .paper .sign em { display: block; font: 600 30px/1.2 var(--script); color: #9e1838; font-style: normal; }
+  .rv { opacity: 0; filter: blur(6px); transform: translateY(8px); transition: opacity .9s, filter .9s, transform .9s; }
+  .rv.in { opacity: 1; filter: none; transform: none; }
+
+  .choices { display: flex; justify-content: center; gap: 22px; margin: 18px 0 6px; min-height: 64px; }
+  .btn {
+    font-variant-numeric: lining-nums;
+    min-width: 118px; min-height: 56px; padding: 12px 22px; border-radius: 14px; cursor: pointer;
+    font: 600 22px var(--serif); letter-spacing: .02em; border: 0; touch-action: manipulation;
+    transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s;
+  }
+  .btn:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+  .yes { color: #fff; background: linear-gradient(180deg, #ff6f98, #d61f55); box-shadow: 0 8px 22px rgba(214, 31, 85, .45); }
+  .yes:hover { box-shadow: 0 10px 28px rgba(214, 31, 85, .6); }
+  .no { color: var(--ink); background: #efe2d2; box-shadow: 0 6px 16px rgba(0,0,0,.18);
+        transition: left .28s cubic-bezier(.2,.9,.2,1), top .28s cubic-bezier(.2,.9,.2,1), transform .25s; }
+  .no.flee { position: fixed; z-index: 20; }
+
+  /* ---------- Depois do "Sim" ---------- */
+  .yay { text-align: center; padding: 8px 0 0; }
+  .yay h2 { font: 600 clamp(40px, 9vw, 56px)/1.05 var(--script); color: #9e1838; margin: 6px 0 10px; }
+  .yay p { margin: 0 auto 18px; max-width: 34ch; }
+  .actions { display: grid; gap: 10px; max-width: 340px; margin: 0 auto; }
+  .actions a {
+    display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 50px; padding: 10px 16px;
+    border-radius: 12px; text-decoration: none; font: 600 19px var(--serif); color: var(--ink);
+    background: #f3e4d1; border: 1px solid rgba(184,137,63,.45);
+  }
+  .actions a.main { color: #fff; background: linear-gradient(180deg, #ff6f98, #d61f55); border: 0; }
+  .actions a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+  #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 30; }
+
+  #mute {
+    position: fixed; z-index: 40; bottom: max(14px, env(safe-area-inset-bottom)); right: max(14px, env(safe-area-inset-right));
+    width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(232,194,122,.35); cursor: pointer;
+    background: rgba(20,5,13,.5); color: var(--gold); display: none; place-items: center;
+  }
+  #mute.show { display: grid; }
+  #mute svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .envelope, .envelope.ready .seal { animation: none; }
+    .rv { transition: opacity .3s; filter: none; transform: none; }
+  }
+</style>
+</head>
+<body>
+<canvas id="sky"></canvas>
+
+<main>
+  <section class="count" aria-live="polite">
+    <h1 id="countTitle">A tua carta abre daqui a</h1>
+    <div class="units">
+      <div class="unit"><span class="num" id="d"><span>--</span></span><span class="lbl">dias</span></div>
+      <div class="unit"><span class="num" id="h"><span>--</span></span><span class="lbl">horas</span></div>
+      <div class="unit"><span class="num" id="m"><span>--</span></span><span class="lbl">minutos</span></div>
+      <div class="unit"><span class="num" id="s"><span>--</span></span><span class="lbl">segundos</span></div>
+    </div>
+    <p class="when" id="countWhen">11 de dezembro de 2026 · 10h00</p>
+  </section>
+
+  <section class="stage">
+    <div class="env-wrap">
+      <button class="envelope" id="envelope" aria-label="Carta selada">
+        <span class="env-back"></span>
+        <span class="env-paper"><i>Carolina</i></span>
+        <span class="env-front"></span>
+        <span class="env-flap"></span>
+        <span class="seal" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M12 20s-6.5-4-8.3-8C2.4 9.1 4.2 5.6 7.4 5.6c1.9 0 3.3 1.1 4.6 2.6 1.3-1.5 2.7-2.6 4.6-2.6 3.2 0 5 3.5 3.7 6.4-1.8 4-8.3 8-8.3 8z"/></svg>
+        </span>
+      </button>
+      <p class="hint" id="hint">Esta carta só se abre a <b>11 de dezembro</b>, às <b>10h00</b>.</p>
+    </div>
+  </section>
+
+  <footer>para a Carolina</footer>
+</main>
+
+<div class="letter-view" id="letterView" role="dialog" aria-modal="true" aria-label="Carta">
+  <article class="paper" id="paper"></article>
+</div>
+
+<canvas id="fx"></canvas>
+<button id="mute" aria-label="Desligar som">
+  <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path id="waves" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>
+</button>
+<audio id="music" src="music.mp3" preload="none" loop playsinline></audio>
+
+<script>
+{
+  "use strict";
+
+  // ===================== Configuração =====================
+  // Dezembro em Lisboa = UTC+0, por isso 10h00 locais = 10:00Z
+  const OPEN_AT   = Date.UTC(2026, 11, 11, 10, 0, 0);   // carta abre
+  const DINNER_AT = Date.UTC(2026, 11, 11, 20, 0, 0);   // jantar
+  const DINNER_END = Date.UTC(2026, 11, 11, 23, 30, 0);
+  const PREVIEW_HASH = "466e9d7f563280b12bcc1b4ed443ad0cbeef01441e478dfcb58fc3381b53ebf8";                      // sha-256 do código de pré-visualização
+  const KEY = "af3c2e98893ba5a80b04514d";
+  const LETTER = "XRYTAF4ESksFG1cDFVBBSkZADgUEEVABQQJWGVcIW0pXGVcHQQdRCgZeH0QLOwgUQQVfAkEWBBpQXF8ODhUTThJcc1VHXlgNDwcfXx0VBzIESRMBDVQSSw1AQkIXD3EXEQNBAkERXBhIVkFCBEYVXRAGWVUZEVFEBBMTF1MIW/uRVB1eTkVfMgwSEFdZUEcXXERBFRBbaE1dS1xCAloPTlkGUUYYRVFEEQdBAhIQVBhSWF0WAEdPGGOhgxRb8ocXQQlAQ1YKUEsUGV0XDBUS+50WWVsVVEcUBAVaAl5LM3dWXVZdQXwSS19CVl1WUBQBDEZABlUXXFxXAxOhyBUUVRBeWQpHVEcQABNBAlwRXBhVUEAWBEcIV0MNDBtcDxhEBEZAoIFFT1lRShMGBEYCV1IQWUYVQEEFDUZCFlMLXVcYVfDDQVYJXVcDQllaQhpYThYNaQ4VGVtUWEARXBcTThJcfxRERFFEEQlXBkFFSllaXEFYXRoRBjpeRVgVUlgFEhUOQVYATVlRVUBCE0NDBjpCEAhZWApYEhZSDQw0TFlWXVxeTkYRWV5cDFYLWVsOBEoTUgNFXV0YXVYYBFgDSl9OEPeVQhRWUQ4DUw5KWwYEFl8LXz9BGAwOWQoJQkQFD1h8DVYABRdLSVIMX0AMGEIHQ0BUREYFDxJWQ18MSkxdS1oNElpByK/GmwgaXV1aa0YTX14MBwRLSVIMX3ETXUMREFdaVVFYThVDAlxbW11VGUUHEkEIXFFOEFdaXBQFEBNaD11FSE1dGUcHQVMIQlUQEEdQX0ANE0ZeBl4NVkoWGX2hwlpBUPPDEEZQVkYFEkoTEPHWGUxNFw9NDVxfMgxNRVgLOwgUQQVfAkEWBBpKTxFcMUcOVVUWXxRXXlVEAgleClYEFRhaVlJCAloMSFEMWF1UEVFIQRZWD11FVF1WVkBOQVgAUUNCRVlUEUcRExZBBkEEFwQXSQ1oXUVBW1wDQ0cIE1UXCkZBFRBbfFZM+pANg7XHGFEBVV1BUEdbXUlDXThZXVFOGVAOAEYSBRIBWFtcUlEXQRRFQQxvGRgEW0YWFVoPGFMOUUdGDBYGFQgTGlcWGxhRXQ5AGFASGg4xWVkJHlYRFRJcDQxvGRgEW0YWFVoPGFMOUUdGDBYGFQgTDV1HGVFcBBEMDhdfdvPBXwgaU0EQFQldXThZFlxRTw1oXUVBW1wDQ0cIE0cNBggTEURHB3tXVBMDDFoTFAwHXQp2Q10XFaWAFfHGVgQXXF5cXRoRBg==";                          // texto da carta, codificado
+  const WA_TEXT = "Sim! Aceito o convite 💌 Até logo às 20h ✨";
+  // ========================================================
+
+  const $ = id => document.getElementById(id);
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const store = {
+    get: k => { try { return localStorage.getItem(k); } catch (_) { return null; } },
+    set: (k, v) => { try { localStorage.setItem(k, v); } catch (_) {} },
+  };
+
+  // ---------- Hora do servidor (não confiar no relógio do telemóvel) ----------
+  let offset = 0;
+  async function syncClock() {
+    try {
+      const t0 = Date.now();
+      const r = await fetch(location.pathname + "?t=" + t0, { method: "HEAD", cache: "no-store" });
+      const t1 = Date.now();
+      const d = r.headers.get("date");
+      if (d) {
+        const server = Date.parse(d) + 500;             // o cabeçalho arredonda ao segundo
+        offset = server - (t0 + t1) / 2;
+      }
+    } catch (_) { /* sem rede: usa o relógio local */ }
+  }
+  const now = () => Date.now() + offset;
+
+  // ---------- Pré-visualização (só para ti): ?ver=CÓDIGO ----------
+  let preview = false;
+  async function checkPreview() {
+    const code = new URLSearchParams(location.search).get("ver");
+    if (!code || !crypto.subtle) return;
+    const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(code));
+    const hex = [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, "0")).join("");
+    preview = hex === PREVIEW_HASH;
+  }
+  const isOpen = () => preview || now() >= OPEN_AT;
+
+  // ---------- Céu de pétalas e brilhos ----------
+  const sky = $("sky"), sctx = sky.getContext("2d");
+  let SW = 0, SH = 0, sdpr = 1, motes = [];
+  function skyResize() {
+    sdpr = Math.min(devicePixelRatio || 1, 2);
+    SW = innerWidth; SH = innerHeight;
+    sky.width = SW * sdpr; sky.height = SH * sdpr; sctx.setTransform(sdpr, 0, 0, sdpr, 0, 0);
+    const n = Math.round(Math.min(46, SW * SH / 22000));
+    motes = Array.from({ length: n }, () => newMote(true));
+  }
+  function newMote(anywhere) {
+    const kind = Math.random() < 0.55 ? "petal" : "spark";
+    return {
+      kind, x: Math.random() * SW, y: anywhere ? Math.random() * SH : -20,
+      r: kind === "petal" ? 4 + Math.random() * 6 : 1 + Math.random() * 1.6,
+      vy: kind === "petal" ? 10 + Math.random() * 18 : 4 + Math.random() * 8,
+      sway: Math.random() * 6.28, rot: Math.random() * 6.28, vr: (Math.random() - .5) * 1.2,
+      hue: Math.random() < 0.7 ? [255, 120 + Math.random() * 60, 160] : [232, 194, 122],
+      a: kind === "petal" ? .25 + Math.random() * .35 : .4 + Math.random() * .5,
+    };
+  }
+  let lastSky = 0;
+  function drawSky(t) {
+    const dt = Math.min(.05, (t - (lastSky || t)) / 1000); lastSky = t;
+    sctx.clearRect(0, 0, SW, SH);
+    for (let i = 0; i < motes.length; i++) {
+      const p = motes[i];
+      p.y += p.vy * dt; p.sway += dt * .8; p.rot += p.vr * dt;
+      const x = p.x + Math.sin(p.sway) * 18;
+      if (p.y > SH + 20) motes[i] = newMote(false);
+      const [r, g, b] = p.hue;
+      if (p.kind === "petal") {
+        sctx.save(); sctx.translate(x, p.y); sctx.rotate(p.rot);
+        sctx.fillStyle = `rgba(${r},${g | 0},${b},${p.a})`;
+        sctx.beginPath(); sctx.ellipse(0, 0, p.r, p.r * .55, 0, 0, Math.PI * 2); sctx.fill();
+        sctx.restore();
+      } else {
+        const tw = .5 + .5 * Math.sin(t / 400 + i);
+        sctx.fillStyle = `rgba(${r},${g | 0},${b},${p.a * tw})`;
+        sctx.beginPath(); sctx.arc(x, p.y, p.r, 0, Math.PI * 2); sctx.fill();
+      }
+    }
+    if (!reduce) requestAnimationFrame(drawSky);
+  }
+
+  // ---------- Contagem ----------
+  const els = { d: $("d"), h: $("h"), m: $("m"), s: $("s") };
+  const prev = {};
+  function setNum(k, v) {
+    const txt = String(v).padStart(2, "0");
+    if (prev[k] === txt) return;
+    prev[k] = txt;
+    els[k].innerHTML = `<span>${txt}</span>`;
+    if (!reduce) { els[k].classList.remove("tick"); void els[k].offsetWidth; els[k].classList.add("tick"); }
+  }
+  function renderCount() {
+    const t = now();
+    let target, title, when;
+    if (!isOpen())            { target = OPEN_AT;   title = "A tua carta abre daqui a";  when = "11 de dezembro de 2026 · 10h00"; }
+    else if (t < DINNER_AT)   { target = DINNER_AT; title = "O nosso jantar é daqui a";  when = "hoje · 20h00 · dress code: bem vestida"; }
+    else if (t < DINNER_END)  { target = null;      title = "É agora ✨";               when = "Até já 💫"; }
+    else                      { target = null;      title = "11 · 12 · 2026";            when = "uma noite para lembrar"; }
+    $("countTitle").textContent = title;
+    $("countWhen").textContent = when;
+    const diff = Math.max(0, (target ?? t) - t);
+    const s = Math.floor(diff / 1000);
+    setNum("d", Math.floor(s / 86400)); setNum("h", Math.floor(s / 3600) % 24);
+    setNum("m", Math.floor(s / 60) % 60); setNum("s", s % 60);
+  }
+
+  // ---------- Envelope ----------
+  const env = $("envelope"), hint = $("hint");
+  const TEASES = [
+    "Ainda não… 🤫", "Paciência, menina 😌", "Não vale espreitar!", "O selo está bem fechado 🔒",
+    "Prometo que vale a pena esperar 💌", "Quase… (ou não)", "Volta a 11 de dezembro ✨",
+  ];
+  let teaseI = 0, teaseTimer = 0, opened = false;
+  function refreshEnvelope() {
+    if (opened) return;
+    if (isOpen()) {
+      env.classList.add("ready");
+      env.setAttribute("aria-label", "Abrir a carta");
+      hint.innerHTML = "Chegou o dia. <b>Toca no selo</b> para abrir.";
+    }
+  }
+  env.addEventListener("click", () => {
+    if (opened) return;
+    if (!isOpen()) {
+      env.classList.remove("shake"); void env.offsetWidth; env.classList.add("shake");
+      hint.innerHTML = `<span class="tease">${TEASES[teaseI++ % TEASES.length]}</span>`;
+      clearTimeout(teaseTimer);
+      teaseTimer = setTimeout(() => { hint.innerHTML = "Esta carta só se abre a <b>11 de dezembro</b>, às <b>10h00</b>."; }, 2600);
+      return;
+    }
+    openLetter();
+  });
+
+  // ---------- Carta ----------
+  function decodeLetter() {
+    const raw = atob(LETTER), k = new TextEncoder().encode(KEY);
+    const bytes = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i) ^ k[i % k.length];
+    return new TextDecoder().decode(bytes);
+  }
+
+  const music = $("music"), muteBtn = $("mute");
+  function startMusic() {
+    try {
+      if (navigator.audioSession) navigator.audioSession.type = "playback";
+      music.preload = "auto";
+      const p = music.play(); if (p && p.catch) p.catch(() => {});
+      muteBtn.classList.add("show");
+    } catch (_) {}
+  }
+  muteBtn.addEventListener("click", () => {
+    music.muted = !music.muted;
+    $("waves").style.display = music.muted ? "none" : "";
+    muteBtn.setAttribute("aria-label", music.muted ? "Ligar som" : "Desligar som");
+  });
+
+  function openLetter() {
+    opened = true;
+    startMusic();                                   // tem de ser no toque (iPhone)
+    env.classList.remove("ready"); env.classList.add("open");
+    hint.textContent = "";
+    $("paper").innerHTML = decodeLetter();
+    setTimeout(() => {
+      $("letterView").classList.add("show");
+      revealLines();
+    }, reduce ? 300 : 1700);
+  }
+
+  function revealLines() {
+    const parts = [...$("paper").querySelectorAll(".rv")];
+    parts.forEach((el, i) => setTimeout(() => {
+      el.classList.add("in");
+      if (el.classList.contains("choices")) setupChoices();
+    }, reduce ? 0 : 500 + i * 900));
+  }
+
+  // ---------- Sim / Não ----------
+  const NO_TEXTS = ["Não", "Tens a certeza?", "Pensa bem…", "Nem pensar 🙈", "Impossível 😌", "Tenta o outro 👉"];
+  function setupChoices() {
+    const yes = $("yes"), no = $("no");
+    if (!yes || !no || no.dataset.ready) return;
+    no.dataset.ready = "1";
+    let flees = 0;
+
+    let lastFlee = 0;
+    function flee() {
+      const t = performance.now();
+      if (t - lastFlee < 280) return;               // um toque = uma fuga
+      lastFlee = t;
+      const r = no.getBoundingClientRect(), y = yes.getBoundingClientRect();
+      if (!no.classList.contains("flee")) {           // passa a "flutuar" a partir de onde está
+        no.style.left = r.left + "px"; no.style.top = r.top + "px";
+        no.classList.add("flee"); void no.offsetWidth;
+      }
+      const m = 16, W = innerWidth - r.width - m, H = innerHeight - r.height - m;
+      let x, yy, tries = 0;
+      do {
+        x = m + Math.random() * Math.max(1, W - m);
+        yy = m + 80 + Math.random() * Math.max(1, H - m - 80);
+        tries++;
+      } while (tries < 30 && (
+        Math.hypot(x - r.left, yy - r.top) < 140 ||                              // longe de onde estava
+        (x < y.right + 20 && x + r.width > y.left - 20 && yy < y.bottom + 20 && yy + r.height > y.top - 20) // não tapar o Sim
+      ));
+      no.style.left = x + "px"; no.style.top = yy + "px";
+      flees++;
+      no.textContent = NO_TEXTS[Math.min(NO_TEXTS.length - 1, flees)];
+      yes.style.transform = `scale(${Math.min(1.5, 1 + flees * 0.07)})`;
+    }
+
+    // rato: foge quando o ponteiro se aproxima
+    addEventListener("pointermove", e => {
+      if (e.pointerType === "touch" || !document.body.contains(no)) return;
+      const r = no.getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      if (Math.hypot(e.clientX - cx, e.clientY - cy) < Math.max(r.width, r.height) * 0.9) flee();
+    });
+    // toque: foge antes de o dedo levantar
+    no.addEventListener("pointerdown", e => { e.preventDefault(); flee(); });
+    no.addEventListener("touchstart", e => { e.preventDefault(); flee(); }, { passive: false });
+    no.addEventListener("click", e => { e.preventDefault(); flee(); });   // teclado também não chega lá
+    yes.addEventListener("click", sayYes);
+  }
+
+  function icsHref() {
+    const ics = [
+      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//carta//PT", "BEGIN:VEVENT",
+      "UID:jantar-misterioso-20261211@carta", "DTSTAMP:20261201T000000Z",
+      "DTSTART:20261211T200000Z", "DTEND:20261211T233000Z",
+      "SUMMARY:Jantar misterioso ✨", "DESCRIPTION:Dress code: bem vestida — como te sentires melhor.",
+      "LOCATION:Segredo 🤫", "BEGIN:VALARM", "TRIGGER:-PT2H", "ACTION:DISPLAY", "DESCRIPTION:Jantar misterioso daqui a 2 horas", "END:VALARM",
+      "END:VEVENT", "END:VCALENDAR",
+    ].join("\r\n");
+    return "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
+  }
+  const gcal = "https://calendar.google.com/calendar/render?action=TEMPLATE"
+    + "&text=" + encodeURIComponent("Jantar misterioso ✨")
+    + "&dates=20261211T200000Z/20261211T233000Z"
+    + "&details=" + encodeURIComponent("Dress code: bem vestida — como te sentires melhor.")
+    + "&location=" + encodeURIComponent("Segredo 🤫");
+
+  function sayYes() {
+    store.set("carta-resposta", "sim");
+    const no = $("no"); if (no) no.remove();
+    const box = $("paper").querySelector(".choices");
+    box.outerHTML = `
+      <div class="yay rv in">
+        <h2>Sabia! 💖</h2>
+        <p>Então está combinado: <b>hoje às 20h00</b>. Vai bem vestida, como te sentires melhor. O resto é surpresa.</p>
+        <div class="actions">
+          <a class="main" href="https://wa.me/?text=${encodeURIComponent(WA_TEXT)}" target="_blank" rel="noopener">Diz-me que sim no WhatsApp</a>
+          <a href="${gcal}" target="_blank" rel="noopener">Guardar no Google Calendar</a>
+          <a href="${icsHref()}" download="jantar-misterioso.ics">Guardar no calendário (iPhone/Outlook)</a>
+        </div>
+      </div>`;
+    celebrate();
+  }
+
+  // ---------- Celebração: corações e brilhos ----------
+  const fx = $("fx"), fctx = fx.getContext("2d");
+  let parts = [], fxRunning = false, lastFx = 0;
+  function celebrate() {
+    const d = Math.min(devicePixelRatio || 1, 2);
+    fx.width = innerWidth * d; fx.height = innerHeight * d; fctx.setTransform(d, 0, 0, d, 0, 0);
+    const cols = ["#ff5c8a", "#ffc8d6", "#e8c27a", "#ffffff", "#d61f55"];
+    for (let burst = 0; burst < 3; burst++) {
+      const bx = innerWidth * (0.25 + burst * 0.25), by = innerHeight * 0.45;
+      for (let i = 0; i < 60; i++) {
+        const a = Math.random() * Math.PI * 2, v = 180 + Math.random() * 380;
+        parts.push({ x: bx, y: by, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 220, life: 0,
+                     max: 2.2 + Math.random() * 1.6, c: cols[(Math.random() * cols.length) | 0],
+                     s: 6 + Math.random() * 9, heart: Math.random() < 0.6, rot: Math.random() * 6, vr: (Math.random() - .5) * 6,
+                     delay: burst * 0.25 });
+      }
+    }
+    if (!fxRunning) { fxRunning = true; lastFx = 0; requestAnimationFrame(drawFx); }
+  }
+  function heartPath(c, s) {
+    c.beginPath(); c.moveTo(0, s * .3);
+    c.bezierCurveTo(-s, -s * .4, -s * .4, -s, 0, -s * .45);
+    c.bezierCurveTo(s * .4, -s, s, -s * .4, 0, s * .3); c.fill();
+  }
+  function drawFx(t) {
+    const dt = Math.min(.05, (t - (lastFx || t)) / 1000); lastFx = t;
+    fctx.clearRect(0, 0, innerWidth, innerHeight);
+    parts = parts.filter(p => (p.life += dt) < p.max + p.delay);
+    for (const p of parts) {
+      if (p.life < p.delay) continue;
+      p.vx *= Math.pow(.25, dt); p.vy = p.vy * Math.pow(.25, dt) + 260 * dt;
+      p.x += p.vx * dt; p.y += p.vy * dt; p.rot += p.vr * dt;
+      const k = (p.life - p.delay) / p.max;
+      fctx.globalAlpha = Math.max(0, 1 - k * k);
+      fctx.fillStyle = p.c;
+      fctx.save(); fctx.translate(p.x, p.y); fctx.rotate(p.rot);
+      if (p.heart) heartPath(fctx, p.s); else fctx.fillRect(-p.s * .3, -p.s * .15, p.s * .6, p.s * .3);
+      fctx.restore();
+    }
+    fctx.globalAlpha = 1;
+    if (parts.length) requestAnimationFrame(drawFx); else fxRunning = false;
+  }
+
+  // ---------- Arranque ----------
+  addEventListener("resize", skyResize);
+  skyResize(); requestAnimationFrame(drawSky);
+  if (reduce) drawSky(performance.now());
+  (async () => {
+    await Promise.all([syncClock(), checkPreview()]);
+    renderCount(); refreshEnvelope();
+    setInterval(() => { renderCount(); refreshEnvelope(); }, 1000);
+    setInterval(syncClock, 5 * 60 * 1000);
+    // se já respondeu "sim" antes, deixa o selo pronto e lembra-a ao abrir
+    if (store.get("carta-resposta") === "sim" && isOpen()) hint.innerHTML = "Já disseste que sim 💖 Toca no selo para reler.";
+  })();
+  renderCount();
+}
+</script>
+</body>
+</html>
