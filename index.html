@@ -200,6 +200,15 @@
   .actions a:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
   #fx { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 30; }
 
+  #gate {
+    position: fixed; inset: 0; z-index: 50; display: none; place-items: center; text-align: center; cursor: pointer;
+    background: radial-gradient(120% 90% at 50% 40%, var(--wine-3) 0%, var(--wine-2) 45%, var(--wine) 100%);
+    transition: opacity .8s;
+  }
+  #gate.show { display: grid; }
+  #gate.hide { opacity: 0; pointer-events: none; }
+  #gate svg { width: 84px; filter: drop-shadow(0 10px 24px rgba(0,0,0,.5)); animation: float 3s ease-in-out infinite; }
+  #gate p { margin: 18px 0 0; font: italic 500 19px var(--serif); color: var(--gold); }
   #mute {
     position: fixed; z-index: 40; bottom: max(14px, env(safe-area-inset-bottom)); right: max(14px, env(safe-area-inset-right));
     width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(232,194,122,.35); cursor: pointer;
@@ -216,6 +225,13 @@
 </head>
 <body>
 <canvas id="sky"></canvas>
+
+<div id="gate" role="button" tabindex="0" aria-label="Entrar">
+  <div>
+    <svg viewBox="0 0 64 44" aria-hidden="true"><rect x="2" y="2" width="60" height="40" rx="5" fill="#f3dcc6"/><path d="M2 6l30 20L62 6" fill="none" stroke="#d9b99c" stroke-width="2"/><circle cx="32" cy="25" r="7" fill="#b01836"/></svg>
+    <p>toca para entrar</p>
+  </div>
+</div>
 
 <main>
   <section class="count" aria-live="polite">
@@ -239,7 +255,7 @@
           <svg viewBox="0 0 24 24"><path d="M12 20s-6.5-4-8.3-8C2.4 9.1 4.2 5.6 7.4 5.6c1.9 0 3.3 1.1 4.6 2.6 1.3-1.5 2.7-2.6 4.6-2.6 3.2 0 5 3.5 3.7 6.4-1.8 4-8.3 8-8.3 8z"/></svg>
         </span>
       </button>
-      <p class="hint" id="hint">Esta carta só se abre a <b>11 de dezembro</b>, às <b>10h00</b>.</p>
+      <p class="hint" id="hint">Esta carta só se abre a <b>10 de dezembro</b>, às <b>10h00</b>.</p>
     </div>
   </section>
 
@@ -254,7 +270,7 @@
 <button id="mute" aria-label="Desligar som">
   <svg viewBox="0 0 24 24"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path id="waves" d="M16 9a4 4 0 0 1 0 6M18.5 6.5a8 8 0 0 1 0 11"/></svg>
 </button>
-<audio id="music" src="music.mp3" preload="none" loop playsinline></audio>
+<audio id="music" src="music.mp3" preload="auto" loop playsinline></audio>
 
 <script>
 {
@@ -262,13 +278,13 @@
 
   // ===================== Configuração =====================
   // Dezembro em Lisboa = UTC+0, por isso 10h00 locais = 10:00Z
-  const OPEN_AT   = Date.UTC(2026, 11, 11, 10, 0, 0);   // carta abre
+  const OPEN_AT   = Date.UTC(2026, 11, 10, 10, 0, 0);   // carta abre (véspera do jantar)
   const DINNER_AT = Date.UTC(2026, 11, 11, 20, 0, 0);   // jantar
   const DINNER_END = Date.UTC(2026, 11, 11, 23, 30, 0);
   const PREVIEW_HASH = "466e9d7f563280b12bcc1b4ed443ad0cbeef01441e478dfcb58fc3381b53ebf8";                      // sha-256 do código de pré-visualização
-  const KEY = "4e64931836fa01fa7ddb51ee";
-  const LETTER = "CBUWV1VSQksOFAIARFRGE0FGWlMEEQEAFAFTTlxeU0pcFgIEEANWUwFYSxILO1kVFAZaVUpADBpbUwoNXxEUFxVaJwNHXgkMWgQaCBZDDzIPRkYCXFAVEgpGFhQXDy8EWhFXRkNaX1BcFgIEEH8HFVYISkJm8tZFWqaFRxlcQhhXWQ8SHBEIFFpEF6GYRQwKFABFRFxQWFlfGGwuXlUDXhctFxFaEQMMVwQWUVQTQl1URAMFXwtGop5EEQ8VDQxbRgBFQFhGQ1ldQgNBXVgVFVIWDQ1GXllKXVsaFFwTQvuAFhAAWUJGBVIXBw1XQwwXFBRDVVUTQE1SWAIOEF2lwBcHDAdSUBcIWxYYCBZDDzIPRkYCXFAVEgpGFhQXD1kWRARYFFpfUEtAC0QFUxNYJUUBFxEVUgoBUV8KG0pDUFYNFgUOXREHEEINCA0VQBAAFBFTFF9aS11BFhUEXkUPExcJAQ5dXhdLFCv1l1YTWfuSFhQEV0MHEhtEF6GGEREQGlkZRAc5DUgTVQoAQ0JbQ1YXD0JHR0dbcQtC95pc07iVFgcCVVgSAERbWE1FD29ZUAxAFFpfUEtAC0QCWF4PAlIXRBBDE1tvFEUKVkxHRVddFgUNUUIVXBUGEAwVSAAWFkVfUAQRSF1AFFgyWVxaTlUREBZaX1tvFEUKVkxHRVddFgUNUUIVXBUGEAwVXwpHFAxSCRtdXhoNeKXCXw1JA0IQEA1bD29ZGwFfQgc5DUgTVQoAQ0JbQ0QNAwwVQxNHCiZZWRlSXFdBGloEXQ8lE14XEKGGR6bGW1kZUVQNDRdDCA==";                          // texto da carta, codificado
-  const WA_TEXT = "Sim! Aceito o convite 💌 Até logo às 20h ✨";
+  const KEY = "11f3f219b3f0beb9d7e45ce8";
+  const LETTER = "DUFGUApTQkpfEQJRFgBCSxIVWwUFQwFdEVUDSQNfU0sNEwJVQldSC1ILSkQLaVlIEVIKUhVBDBsKVgpcDUUQT0YJJlVHDAlRX1BKD0lCDzNeQ0ZTDgQRSlkVF0IXXS9ZX0UHQRxbX1ENEwJVQisDTQVbSxRmoNYYX/LVQEZdQhkGXA9DTkUMTAkXFveYFwxXEVQVQwNRWFgOHWx/DAEHBkR+FkdaQwNRUlBGVgsSQlwFQQNUDV9C+s0XEFkVXwwGQ1QVRwdHQ1gMRwMQDwwRTQFFDFtGDFkXWA9KEwMSQvrRExBRCxZCXQFEBltXEQxKEUATUgoSQEwDXQJfQgmhmERUDVFSAhdVXkJID0lCDzNeQ0ZTDgQRSlkVF0IXXVlLQVAIEwVeUEoRDkRUAUdcfRZSFkcVAApcVAtaHBVCUFdcEwVfD0UDSBFeCVsVEhBdEUUDEwBbS1wQExVVDBELS0RaAFhdDBcWEX+lkAkSWfrDExRVBRcDSkgXFveGQxFNHw1JQ1g4DUlCUApRERZfGwVEDhRHFUcGdF8S8MVd07nEEwdTBwwWWBcIWRtFXW8EVVgQEwVeUEoRDkRTCgoLWgFERUZDQVsyERFaURNGRVYMEwVcAxYRBEZVEVoVGgBLExEPV1sQSFwREVhjCwheFgZCEUBaDVsyERFaURNGRVYMEwVcAxYRBEZVEVoVDQoaEVgCDkRcXhtcfaWTDVlNWxFDEVtbXW8EHlUPRVg4DUlCUApRERZfGxdeAloVERMaD3IJXkZTXFYQH1pVD1shSw1EEfeGFaabXg1JVgsMDRYSDQ==";                          // texto da carta, codificado
+  const WA_TEXT = "Sim! Aceito o jantarzinho de Natal 💌✨";
   // ========================================================
 
   const $ = id => document.getElementById(id);
@@ -378,7 +394,7 @@
   const env = $("envelope"), hint = $("hint");
   const TEASES = [
     "Ainda não… 🤫", "Paciência, menina 😌", "Não vale espreitar!", "O selo está bem fechado 🔒",
-    "Prometo que vale a pena esperar 💌", "Quase… (ou não)", "Volta a 11 de dezembro ✨",
+    "Prometo que vale a pena esperar 💌", "Quase… (ou não)", "Volta a 10 de dezembro ✨",
   ];
   let teaseI = 0, teaseTimer = 0, opened = false;
   function refreshEnvelope() {
@@ -395,7 +411,7 @@
       env.classList.remove("shake"); void env.offsetWidth; env.classList.add("shake");
       hint.innerHTML = `<span class="tease">${TEASES[teaseI++ % TEASES.length]}</span>`;
       clearTimeout(teaseTimer);
-      teaseTimer = setTimeout(() => { hint.innerHTML = "Esta carta só se abre a <b>11 de dezembro</b>, às <b>10h00</b>."; }, 2600);
+      teaseTimer = setTimeout(() => { hint.innerHTML = "Esta carta só se abre a <b>10 de dezembro</b>, às <b>10h00</b>."; }, 2600);
       return;
     }
     openLetter();
@@ -413,11 +429,26 @@
   function startMusic() {
     try {
       if (navigator.audioSession) navigator.audioSession.type = "playback";
-      music.preload = "auto";
-      const p = music.play(); if (p && p.catch) p.catch(() => {});
+      if (music.paused) { const p = music.play(); if (p && p.catch) p.catch(() => {}); }
       muteBtn.classList.add("show");
     } catch (_) {}
   }
+
+  // Tenta tocar logo ao abrir o site. Os browsers (sobretudo no telemóvel) bloqueiam som
+  // sem um toque primeiro: nesse caso mostra o ecrã de entrada e a música começa nesse toque.
+  const gate = $("gate");
+  function enter() {
+    startMusic();
+    gate.classList.add("hide");
+    setTimeout(() => gate.remove(), 900);
+  }
+  gate.addEventListener("click", enter);
+  gate.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); enter(); } });
+  try {
+    const p = music.play();
+    if (p && p.then) p.then(() => { muteBtn.classList.add("show"); gate.remove(); }).catch(() => gate.classList.add("show"));
+    else gate.classList.add("show");
+  } catch (_) { gate.classList.add("show"); }
   muteBtn.addEventListener("click", () => {
     music.muted = !music.muted;
     $("waves").style.display = music.muted ? "none" : "";
@@ -492,22 +523,13 @@
     yes.addEventListener("click", sayYes);
   }
 
-  function icsHref() {
-    const ics = [
-      "BEGIN:VCALENDAR", "VERSION:2.0", "PRODID:-//carta//PT", "BEGIN:VEVENT",
-      "UID:jantar-misterioso-20261211@carta", "DTSTAMP:20261201T000000Z",
-      "DTSTART:20261211T200000Z", "DTEND:20261211T233000Z",
-      "SUMMARY:Jantar misterioso ✨", "DESCRIPTION:Dress code: com aquilo que te fizer sentir melhor.",
-      "LOCATION:Segredo 🤫", "BEGIN:VALARM", "TRIGGER:-PT2H", "ACTION:DISPLAY", "DESCRIPTION:Jantar misterioso daqui a 2 horas", "END:VALARM",
-      "END:VEVENT", "END:VCALENDAR",
-    ].join("\r\n");
-    return "data:text/calendar;charset=utf-8," + encodeURIComponent(ics);
+  // "hoje" / "amanhã" conforme o dia em que ela abre (dezembro em Lisboa = UTC)
+  function dinnerWhen() {
+    const d = new Date(now()), day = d.getUTCDate(), mon = d.getUTCMonth(), yr = d.getUTCFullYear();
+    if (yr === 2026 && mon === 11 && day === 11) return "hoje";
+    if (yr === 2026 && mon === 11 && day === 10) return "amanhã";
+    return "dia 11 de dezembro";
   }
-  const gcal = "https://calendar.google.com/calendar/render?action=TEMPLATE"
-    + "&text=" + encodeURIComponent("Jantar misterioso ✨")
-    + "&dates=20261211T200000Z/20261211T233000Z"
-    + "&details=" + encodeURIComponent("Dress code: com aquilo que te fizer sentir melhor.")
-    + "&location=" + encodeURIComponent("Segredo 🤫");
 
   function sayYes() {
     store.set("carta-resposta", "sim");
@@ -515,12 +537,10 @@
     const box = $("paper").querySelector(".choices");
     box.outerHTML = `
       <div class="yay rv in">
-        <h2>Sabia! 💖</h2>
-        <p>Então está combinado: <b>hoje às 20h00</b>. Vai com aquilo que te fizer sentir melhor. O resto é surpresa.</p>
+        <h2>Top!</h2>
+        <p>Então está combinado: <b>${dinnerWhen()} às 20h00</b>. Vai com aquilo que te fizer sentir melhor. O resto é surpresa.</p>
         <div class="actions">
           <a class="main" href="https://wa.me/?text=${encodeURIComponent(WA_TEXT)}" target="_blank" rel="noopener">Diz-me que sim no WhatsApp</a>
-          <a href="${gcal}" target="_blank" rel="noopener">Guardar no Google Calendar</a>
-          <a href="${icsHref()}" download="jantar-misterioso.ics">Guardar no calendário (iPhone/Outlook)</a>
         </div>
       </div>`;
     celebrate();
